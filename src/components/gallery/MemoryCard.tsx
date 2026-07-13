@@ -53,18 +53,32 @@ export default function MemoryCard({ memory, onClick, index }: MemoryCardProps) 
         {!imgLoaded && (
           <div className="absolute inset-0 bg-dark-surface animate-pulse" />
         )}
-        <Image
-          src={memory.src}
-          alt={memory.title}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className={`object-cover transition-all duration-700 group-hover:scale-105 ${
-            imgLoaded ? "opacity-100" : "opacity-0"
-          }`}
-          loading="lazy"
-          onLoad={() => setImgLoaded(true)}
-        />
+        {/* blob: URLs (client uploads) use plain img; static paths use next/image */}
+        {memory.src.startsWith("blob:") ? (
+          <img
+            src={memory.src}
+            alt={memory.title}
+            className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${
+              imgLoaded ? "opacity-100" : "opacity-0"
+            }`}
+            loading="lazy"
+            onLoad={() => setImgLoaded(true)}
+          />
+        ) : (
+          <Image
+            src={memory.src}
+            alt={memory.title}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className={`object-cover transition-all duration-700 group-hover:scale-105 ${
+              imgLoaded ? "opacity-100" : "opacity-0"
+            }`}
+            loading="lazy"
+            onLoad={() => setImgLoaded(true)}
+          />
+        )}
       </div>
+
 
       {/* Hover Overlay */}
       <AnimatePresence>
