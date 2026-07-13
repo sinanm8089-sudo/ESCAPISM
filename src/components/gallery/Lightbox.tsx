@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Memory } from "@/types";
-import { FiX, FiChevronLeft, FiChevronRight, FiHeart, FiDownload, FiShare2, FiInfo, FiMapPin, FiCalendar } from "react-icons/fi";
+import { FiX, FiChevronLeft, FiChevronRight, FiDownload, FiShare2, FiInfo, FiMapPin, FiCalendar } from "react-icons/fi";
 import { categories } from "@/data/mockData";
 
 interface LightboxProps {
@@ -163,14 +163,23 @@ export default function Lightbox({ memories, initialIndex, onClose }: LightboxPr
 
               {/* Actions */}
               <div className="flex gap-4 mt-auto">
-                <button className="flex-1 py-3 glass rounded-full flex items-center justify-center gap-2 text-cream hover:border-gold/50 transition-colors">
-                  <FiHeart className={memory.isLiked ? "fill-gold text-gold" : ""} />
-                  <span className="text-sm font-medium">{memory.likes}</span>
-                </button>
-                <button className="w-12 h-12 glass rounded-full flex items-center justify-center text-cream hover:border-gold/50 transition-colors">
+                <button
+                  aria-label="Download image"
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = memory.src;
+                    link.download = `${memory.title}.jpg`;
+                    link.click();
+                  }}
+                  className="flex-1 py-3 glass rounded-full flex items-center justify-center gap-2 text-cream hover:border-gold/50 hover:text-gold transition-colors"
+                >
                   <FiDownload />
+                  <span className="text-sm font-medium">Download</span>
                 </button>
-                <button className="w-12 h-12 glass rounded-full flex items-center justify-center text-cream hover:border-gold/50 transition-colors">
+                <button
+                  aria-label="Share image"
+                  className="w-12 h-12 glass rounded-full flex items-center justify-center text-cream hover:border-gold/50 hover:text-gold transition-colors"
+                >
                   <FiShare2 />
                 </button>
               </div>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Memory } from "@/types";
-import { FiHeart, FiDownload, FiShare2 } from "react-icons/fi";
+import { FiDownload, FiShare2 } from "react-icons/fi";
 import { categories } from "@/data/mockData";
 
 interface MemoryCardProps {
@@ -15,22 +15,18 @@ interface MemoryCardProps {
 
 export default function MemoryCard({ memory, onClick, index }: MemoryCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [liked, setLiked] = useState(memory.isLiked);
-  const [likeCount, setLikeCount] = useState(memory.likes);
   const [imgLoaded, setImgLoaded] = useState(false);
-  
-  const categoryInfo = categories.find(c => c.id === memory.category);
 
-  const handleLike = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setLiked(!liked);
-    setLikeCount(prev => liked ? prev - 1 : prev + 1);
-  };
+  const categoryInfo = categories.find(c => c.id === memory.category);
 
   const handleAction = (e: React.MouseEvent, action: string) => {
     e.stopPropagation();
-    // Simulate action
-    console.log(`${action} clicked for ${memory.id}`);
+    if (action === "download") {
+      const link = document.createElement("a");
+      link.href = memory.src;
+      link.download = `${memory.title}.jpg`;
+      link.click();
+    }
   };
 
   return (
@@ -45,15 +41,16 @@ export default function MemoryCard({ memory, onClick, index }: MemoryCardProps) 
       whileHover={{ y: -5 }}
     >
       {/* Aspect-ratio wrapper */}
-      <div 
-        className="w-full relative" 
+      <div
+        className="w-full relative"
         style={{ paddingBottom: `${(memory.height / memory.width) * 100}%` }}
       >
         {/* Skeleton shimmer while loading */}
         {!imgLoaded && (
           <div className="absolute inset-0 bg-dark-surface animate-pulse" />
         )}
-        {/* blob: URLs (client uploads) use plain img; static paths use next/image */}
+
+        {/* blob: URLs (client uploads) skip next/image optimization */}
         {memory.src.startsWith("blob:") ? (
           <img
             src={memory.src}
@@ -79,7 +76,6 @@ export default function MemoryCard({ memory, onClick, index }: MemoryCardProps) 
         )}
       </div>
 
-
       {/* Hover Overlay */}
       <AnimatePresence>
         {isHovered && (
@@ -90,53 +86,41 @@ export default function MemoryCard({ memory, onClick, index }: MemoryCardProps) 
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Top Bar */}
+            {/* Top action buttons */}
             <div className="flex justify-end gap-2">
-              <button 
+              <button
                 aria-label="Share this memory"
-                onClick={(e) => handleAction(e, 'share')}
+                onClick={(e) => handleAction(e, "share")}
                 className="w-8 h-8 rounded-full glass-light flex items-center justify-center text-cream hover:bg-gold/20 hover:text-gold transition-colors"
               >
                 <FiShare2 size={14} />
               </button>
-              <button 
+              <button
                 aria-label="Download this memory"
-                onClick={(e) => handleAction(e, 'download')}
+                onClick={(e) => handleAction(e, "download")}
                 className="w-8 h-8 rounded-full glass-light flex items-center justify-center text-cream hover:bg-gold/20 hover:text-gold transition-colors"
               >
                 <FiDownload size={14} />
               </button>
             </div>
 
-            {/* Bottom Content */}
+            {/* Bottom: title, category, location */}
             <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-              <h3 className="text-cream font-heading text-lg leading-tight mb-1">{memory.title}</h3>
-              
-              <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center gap-2">
-                  {categoryInfo && (
-                    <span className="text-xs px-2 py-1 rounded glass-light text-cream flex items-center gap-1">
-                      <span>{categoryInfo.emoji}</span> {categoryInfo.label}
-                    </span>
-                  )}
-                  {memory.location && (
-                    <span className="text-[10px] text-fog-light truncate max-w-[100px]">
-                      {memory.location}
-                    </span>
-                  )}
-                </div>
-                
-                <button 
-                  aria-label={liked ? "Unlike this memory" : "Like this memory"}
-                  onClick={handleLike}
-                  className="flex items-center gap-1.5 text-xs font-medium"
-                >
-                  <FiHeart 
-                    className={`transition-colors ${liked ? "fill-gold text-gold" : "text-cream"}`} 
-                    size={16} 
-                  />
-                  <span className={liked ? "text-gold" : "text-cream"}>{likeCount}</span>
-                </button>
+              <h3 className="text-cream font-heading text-lg leading-tight mb-1">
+                {memory.title}
+              </h3>
+
+              <div className="flex items-center gap-2 mt-2">
+                {categoryInfo && (
+                  <span className="text-xs px-2 py-1 rounded glass-light text-cream flex items-center gap-1">
+                    <span>{categoryInfo.emoji}</span> {categoryInfo.label}
+                  </span>
+                )}
+                {memory.location && (
+                  <span className="text-[10px] text-fog-light truncate max-w-[120px]">
+                    {memory.location}
+                  </span>
+                )}
               </div>
             </div>
           </motion.div>

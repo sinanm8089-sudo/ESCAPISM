@@ -49,6 +49,14 @@ export default function UploadCenter() {
     setFiles([]);
     setUploadSuccess(true);
     
+    // Auto-scroll to gallery after a short delay so user sees photos land
+    setTimeout(() => {
+      const gallerySection = document.getElementById("gallery");
+      if (gallerySection) {
+        gallerySection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 600);
+
     setTimeout(() => {
       setUploadSuccess(false);
     }, 4000);
@@ -174,7 +182,7 @@ export default function UploadCenter() {
                   <FiCheckCircle className="w-16 h-16 text-green-400 mb-4" />
                 </motion.div>
                 <h4 className="text-xl font-heading text-cream mb-2">Photos Added!</h4>
-                <p className="text-fog-light text-sm">Scroll down to see them in your gallery.</p>
+                <p className="text-fog-light text-sm">Taking you to the gallery now…</p>
               </motion.div>
             )}
           </AnimatePresence>
