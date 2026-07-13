@@ -108,6 +108,7 @@ export default function Lightbox({ memories, initialIndex, onClose }: LightboxPr
               src={memory.src}
               alt={memory.title}
               className="max-w-full max-h-[85vh] object-contain shadow-2xl rounded-sm"
+              style={{ width: 'auto', height: 'auto' }}
             />
           </motion.div>
         </AnimatePresence>

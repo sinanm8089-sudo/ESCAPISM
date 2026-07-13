@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Memory } from "@/types";
 import { FiHeart, FiDownload, FiShare2 } from "react-icons/fi";
@@ -16,6 +17,7 @@ export default function MemoryCard({ memory, onClick, index }: MemoryCardProps) 
   const [isHovered, setIsHovered] = useState(false);
   const [liked, setLiked] = useState(memory.isLiked);
   const [likeCount, setLikeCount] = useState(memory.likes);
+  const [imgLoaded, setImgLoaded] = useState(false);
   
   const categoryInfo = categories.find(c => c.id === memory.category);
 
@@ -42,20 +44,29 @@ export default function MemoryCard({ memory, onClick, index }: MemoryCardProps) 
       onMouseLeave={() => setIsHovered(false)}
       whileHover={{ y: -5 }}
     >
+      {/* Aspect-ratio wrapper */}
       <div 
         className="w-full relative" 
-        // Aspect ratio placeholder based on mock dimensions
         style={{ paddingBottom: `${(memory.height / memory.width) * 100}%` }}
       >
-        <img
+        {/* Skeleton shimmer while loading */}
+        {!imgLoaded && (
+          <div className="absolute inset-0 bg-dark-surface animate-pulse" />
+        )}
+        <Image
           src={memory.src}
           alt={memory.title}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className={`object-cover transition-all duration-700 group-hover:scale-105 ${
+            imgLoaded ? "opacity-100" : "opacity-0"
+          }`}
           loading="lazy"
+          onLoad={() => setImgLoaded(true)}
         />
       </div>
 
-      {/* Overlay */}
+      {/* Hover Overlay */}
       <AnimatePresence>
         {isHovered && (
           <motion.div
@@ -68,12 +79,14 @@ export default function MemoryCard({ memory, onClick, index }: MemoryCardProps) 
             {/* Top Bar */}
             <div className="flex justify-end gap-2">
               <button 
+                aria-label="Share this memory"
                 onClick={(e) => handleAction(e, 'share')}
                 className="w-8 h-8 rounded-full glass-light flex items-center justify-center text-cream hover:bg-gold/20 hover:text-gold transition-colors"
               >
                 <FiShare2 size={14} />
               </button>
               <button 
+                aria-label="Download this memory"
                 onClick={(e) => handleAction(e, 'download')}
                 className="w-8 h-8 rounded-full glass-light flex items-center justify-center text-cream hover:bg-gold/20 hover:text-gold transition-colors"
               >
@@ -100,6 +113,7 @@ export default function MemoryCard({ memory, onClick, index }: MemoryCardProps) 
                 </div>
                 
                 <button 
+                  aria-label={liked ? "Unlike this memory" : "Like this memory"}
                   onClick={handleLike}
                   className="flex items-center gap-1.5 text-xs font-medium"
                 >
