@@ -44,7 +44,7 @@ export default function ThreeScene() {
           <pointLight position={[0, 5, 10]} intensity={0.5} color="#D4AF37" distance={30} />
 
           {/* Atmospheric fog */}
-          <fogExp2 attach="fog" color="#0D1117" density={0.035} />
+          <fogExp2 attach="fog" args={["#0D1117", 0.035]} />
 
           {/* Scene elements */}
           <MountainScene />
